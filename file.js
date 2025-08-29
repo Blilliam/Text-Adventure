@@ -11,7 +11,7 @@ const player = {
 
 const input = document.querySelector("#text-controls")
 input.addEventListener("keypress", function(e) {
-    if (e.key = "Enter") {
+    if (e.key == "Enter") {
         if (input.value == "w") {
             move(0, -1)
             
@@ -26,11 +26,11 @@ input.addEventListener("keypress", function(e) {
             move(1, 0)
         }
         if (input.value == "l") {
-            displayLore(location().description)
+            displayLore(getLocation().description)
             displayLore("The following items are on the ground " + listItem())
         }
         if (input.value == "j") {
-            pickUp(location().item)
+            pickUp(getLocation().item)
         }
         input.value = ""
     }
@@ -48,13 +48,13 @@ for (let row = 0;row < 10; row++) {
 
 function listItem() {
     let list = ""
-    if (location().item.length > 1) {
-        for (let count = 0;count < location().item.length - 1; count++) {
+    if (getLocation().item.length > 1) {
+        for (let count = 0;count < getLocation().item.length - 1; count++) {
             list+= location().item[count].name + ", "
         }
-         list += "and " + location().item[location().item.length - 1].name
+         list += "and " + getLocation().item[getLocation().item.length - 1].name
     } else {
-       list = location().item.name
+       list = getLocation().item[0].name
     }
         
     return list
@@ -75,22 +75,22 @@ function room() {
 let oldRoom = ""
 let newRoom = ""
 
-function location() {
+function getLocation() {
     return map[player.y][player.x]
 }
 
 function move(dx, dy) {
     if (xycheck(dx, dy)) {
-        oldRoom = location()
+        oldRoom = getLocation()
         player.x += dx
         player.y += dy
-        newRoom = location()
+        newRoom = getLocation()
         if (oldRoom.name == newRoom.name) {
-            displayLore("You are in a " + location().name + "... but it looks a little different")
+            displayLore("You are in a " + getLocation().name + "... but it looks a little different")
             displayMap()
         }
         else {
-            displayLore("You are in a " + location().name)
+            displayLore("You are in a " + getLocation().name)
             displayMap()
         }
         
