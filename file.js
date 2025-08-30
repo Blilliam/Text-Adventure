@@ -1,5 +1,6 @@
 // Select the HTML element where lore text will be displayed
 const text = document.querySelector("#textContainer")
+const MAP = document.querySelector("#mapContainer")
 
 // Player object with stats and position
 const player = {
@@ -107,12 +108,22 @@ function move(dx, dy) {
 
         // If room names are the same, say "looks different"
         if (oldRoom.name == newRoom.name) {
-            displayLore("You are in a " + getLocation().name + "... but it looks a little different")
-            displayMap()
+            document.getElementById('textContainer').textContent = '';
+            displayLore("You are in a " + getLocation().name + "... <br>but it looks a little different")
+            consGenerateMap()
+            htmlGenerateMap()
+            console.log(consMapStr) 
+            document.getElementById('mapContainer').textContent = '';
+            displayMap(htmlMapStr) 
         }
         else {
+            document.getElementById('textContainer').textContent = '';
             displayLore("You are in a " + getLocation().name)
-            displayMap()
+            consGenerateMap()
+            htmlGenerateMap()
+            console.log(consMapStr)  
+            document.getElementById('mapContainer').textContent = '';
+            displayMap(htmlMapStr) 
         }
     } else {
         // Invalid move
@@ -164,15 +175,20 @@ map[1][5].item.push({type: "Aurmor", name: "Iron Aurmor", hp: 5})
 map[1][5].enemies.push({name: "Goblin", atk: 1, hp: 5})
 
 // Display the map in the console
-function displayMap() {
-    let colStr = "    "
+
+let consMapStr = ""
+
+function consGenerateMap() {
+    console.clear()
+    consMapStr = ""
+    let numRowStr = "    "
     for (let i = 0; i < map.length; i++) {
-        colStr += i + "    "
+        numRowStr += i + "    "
     }
-    console.log(colStr)
+    consMapStr += numRowStr
 
     for (let i = 0; i < map.length; i++) {
-        let rowStr = i + "  "
+        let rowStr = "\n" + i + "  "
         for (let j = 0; j < map[i].length; j++){
             // If player is here, display "PLR"
             if (player.x == j && player.y == i) {
@@ -184,13 +200,41 @@ function displayMap() {
             }
             rowStr += "  "
         }
-        console.log(rowStr)
+        consMapStr += rowStr
     }
-    console.log("\n\n")
 }
 
+let htmlMapStr = ""
+
+function htmlGenerateMap() {
+    htmlMapStr = ""
+    let numRowStr = "    "
+    for (let i = 0; i < map.length; i++) {
+        numRowStr += i + "    "
+    }
+    htmlMapStr += numRowStr
+
+    for (let i = 0; i < map.length; i++) {
+        let rowStr = "<br>" + i + "  "
+        for (let j = 0; j < map[i].length; j++){
+            // If player is here, display "PLR"
+            if (player.x == j && player.y == i) {
+                rowStr += "PLR"
+            }
+            else {
+                // Show first 3 letters of the room name
+                rowStr += map[i][j].name.substring(0, 3)
+            }
+            rowStr += "  "
+        }
+        htmlMapStr += rowStr
+    }
+}
 // Display the initial map at game start
-displayMap()    
+consGenerateMap()
+htmlGenerateMap()
+console.log(consMapStr)  
+displayMap(htmlMapStr) 
 
 // Checks if the move is valid (not out of bounds or into empty room)
 function xycheck(dx, dy) {
@@ -214,4 +258,11 @@ function displayLore(displayStr) {
     textElement.id = "lore"
     textElement.innerHTML = displayStr
     text.appendChild(textElement)
+}
+
+function displayMap(displayStr) {
+    let MAPElement = document.createElement("div")
+    MAPElement.id = "map"
+    MAPElement.innerHTML = displayStr
+    MAP.appendChild(MAPElement)
 }

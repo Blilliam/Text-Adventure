@@ -1,5 +1,5 @@
 body {
-    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet M5', sans-serif;
+    font-family: "Courier New", Courier, monospace;
     background-color: black;
 }
 
@@ -20,7 +20,7 @@ body {
     color: white;
     width: 50%;
     margin-left: 15%;
-    margin-top: 15%;
+    margin-top: 5%;
 }
 
 #right h5 {
@@ -31,4 +31,9 @@ body {
 #text-controls {
     background-color: rgb(45, 45, 45);
     border: 2px solid grey;
+}
+
+div {
+  white-space: pre;      /* preserves spaces and line breaks */
+  /* or use: pre-wrap to wrap long lines */
 }
