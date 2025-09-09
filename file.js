@@ -26,7 +26,7 @@ for (let row = 0;row < 10; row++) {
 function room() {
     return {
         enemies: [],
-        item: [],
+        items: [],
         name: " ~ ",          // default symbol
         description: "x",     // basic description
         found: false,
@@ -70,8 +70,8 @@ hall('Item Shop', map, 6, 3)
 hall("Introduction Room", map, 1, 5)
 
 // Items in the Introduction Room
-map[1][5].item.push({type: "Weapon", name: "Stone Sword", atk: 1})
-map[1][5].item.push({type: "Aurmor", name: "Iron Aurmor", hp: 5})
+map[1][5].items.push({type: "Weapon", name: "Stone Sword", atk: 1})
+map[1][5].items.push({type: "Aurmor", name: "Iron Aurmor", hp: 5})
 
 // Enemy in the Introduction Room
 map[1][5].enemies.push({name: "Goblin", atk: 1, hp: 5})
@@ -99,12 +99,12 @@ input.addEventListener("keypress", function(e) {
         // Lore + items in current location
         if (input.value == "l") {
             displayLore(getLocation().description)
-            displayLore("The following items are on the ground " + listItem())
+            displayLore(listItem())
         }
 
         // Pick up items
         if (input.value == "j") {
-            pickUp(getLocation().item)
+            pickUp(getLocation().items)
         }
 
         // Clear the input box after each command
@@ -115,24 +115,33 @@ input.addEventListener("keypress", function(e) {
 
 // Function to list all items in the current room
 function listItem() {
-    let list = ""
-    if (getLocation().item.length > 1) {
+    if (getLocation().items.length == 0) {
+        return "There are no items around."
+    }
+    let list = "The following items are on the ground "
+    if (getLocation().items.length > 1) {
         // Multiple items -> list them separated by commas
-        for (let count = 0;count < getLocation().item.length - 1; count++) {
-            list+= getLocation().item[count].name + ", " 
+        for (let count = 0;count < getLocation().items.length - 1; count++) {
+            list+= getLocation().items[count].name + ", " 
         }
         // Add "and" before the last item
-        list += "and " + getLocation().item[getLocation().item.length - 1].name
+        list += "and " + getLocation().items[getLocation().items.length - 1].name
     } else {
        // Only one item
-       list = getLocation().item[0].name
+       list = getLocation().items[0].name
     }
     return list
+
 }
 
 // Picking up items (currently empty)
 function pickUp(item) {
-
+    if (getLocation().items.length != 0) {
+        displayLore(listItem())
+//MAKE SCROLL BOX FOR FUTURE ITEM STUFF
+    } else {
+        displayLore("There are no items around.")
+    }
 }
 
 
@@ -169,7 +178,7 @@ function move(dx, dy) {
 }
 
 function moveDisplay(roomDescription) {
-    document.getElementById('textContainer').textContent = '';
+    //document.getElementById('textContainer').textContent = '';
     displayLore(roomDescription)
     consGenerateMap()
     htmlGenerateMap()
@@ -234,7 +243,11 @@ function htmlGenerateMap() {
                 if (map[i][j].found) {
                     rowStr += map[i][j].name.substring(0, 3)
                 } else {
+                    if (undiscovered(j, i)) {
+                        rowStr += " ? "
+                    } else {
                         rowStr += "   "
+                    }
                 }
             }
             rowStr += "  "
@@ -243,9 +256,21 @@ function htmlGenerateMap() {
     }
 }
 
-// if (player.x == j && player.y == i - 1 && map[player.y - 1][player.x].found == false) {
-//     rowStr += " ? "
-// }
+function undiscovered(j, i) {
+    if (player.x + 1 == j && player.y == i && map[player.y][player.x + 1].found == false && map[player.y][player.x + 1].name != " ~ ") {
+        return true
+    } else if (player.x - 1 == j && player.y == i && map[player.y][player.x - 1].found == false && map[player.y][player.x - 1].name != " ~ ") {
+        return true
+    } else if (player.x == j && player.y + 1 == i && map[player.y + 1][player.x].found == false && map[player.y + 1][player.x].name != " ~ ") {
+        return true
+    } else if (player.x == j && player.y - 1 == i && map[player.y - 1][player.x ].found == false && map[player.y - 1][player.x].name != " ~ ") {
+        return true
+    } else {
+        return false
+    }
+}
+
+
 
 // Display the initial map at game start
 consGenerateMap()
