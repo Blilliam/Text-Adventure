@@ -3,15 +3,18 @@ const text = document.querySelector("#textContainer")
 const MAP = document.querySelector("#mapContainer")
 // Player object with stats and position
 const player = {
-    weapons: "none",
-    aurmor: "none",
-    consumable: "none",
+    inventory: [],
     x: 5,   // player starting X position    
     y: 0,   // player starting Y position
     hp: 10, // player health
     atk: 1  // player attack power
 }
 
+function isNumeric(str) {
+  if (typeof str != "string") return false // we only process strings!  
+  return !isNaN(str) && // use type coercion to parse the _entirety_ of the string (`parseFloat` alone does not do this)...
+         !isNaN(parseFloat(str)) // ...and ensure strings of whitespace fail
+}
 
 // Build a 10x10 map of rooms
 const map = []
@@ -70,8 +73,8 @@ hall('Item Shop', map, 6, 3)
 hall("Introduction Room", map, 1, 5)
 
 // Items in the Introduction Room
-map[1][5].items.push({type: "Weapon", name: "Stone Sword", atk: 1})
-map[1][5].items.push({type: "Aurmor", name: "Iron Aurmor", hp: 5})
+map[1][5].items.push({type: "Weapon", name: "Stone Sword", atk: 1, remove: false})
+map[1][5].items.push({type: "Aurmor", name: "Iron Aurmor", hp: 5, remove: false})
 
 // Enemy in the Introduction Room
 map[1][5].enemies.push({name: "Goblin", atk: 1, hp: 5})
@@ -79,32 +82,44 @@ map[1][5].enemies.push({name: "Goblin", atk: 1, hp: 5})
 // Grab the input box for player commands
 const input = document.querySelector("#text-controls")
 
+let mode = "normal"
+
 // Listen for keypress events inside the input box
 input.addEventListener("keypress", function(e) {
     if (e.key == "Enter") {  // Only check when Enter is pressed
         // Movement commands
-        if (input.value == "w") {
-            move(0, -1) // up
-        }
-        if (input.value == "a") {
-            move(-1, 0) // left
-        }
-        if (input.value == "s") {
-            move(0, 1) // down
-        }
-        if (input.value == "d") {
-            move(1, 0) // right
-        }
+        if (mode == "normal") {
+            if (input.value == "w") {
+                move(0, -1) // up
+            }
+            if (input.value == "a") {
+                move(-1, 0) // left
+            }
+            if (input.value == "s") {
+                move(0, 1) // down
+            }
+            if (input.value == "d") {
+                move(1, 0) // right
+            }
 
-        // Lore + items in current location
-        if (input.value == "l") {
-            displayLore(getLocation().description)
-            displayLore(listItem())
-        }
+            // Lore + items in current location
+            if (input.value == "l") {
+                displayLore(getLocation().description)
+                displayLore(listItem())
+            }
 
-        // Pick up items
-        if (input.value == "j") {
-            pickUp(getLocation().items)
+            // Pick up items
+            if (input.value == "j") {
+                pickUp(getLocation().items)
+                mode = "pickUp"
+            }
+        } else if (mode == "pickUp") {
+            console.log(player.inventory)
+            console.log(getLocation().items)
+            pickUp()
+            console.log(player.inventory)
+            console.log(getLocation().items)
+
         }
 
         // Clear the input box after each command
@@ -112,6 +127,10 @@ input.addEventListener("keypress", function(e) {
     }
 })
 
+// function itemType(item) {
+//     type = item.type
+//     return type
+// }
 
 // Function to list all items in the current room
 function listItem() {
@@ -122,26 +141,50 @@ function listItem() {
     if (getLocation().items.length > 1) {
         // Multiple items -> list them separated by commas
         for (let count = 0;count < getLocation().items.length - 1; count++) {
-            list+= getLocation().items[count].name + ", " 
+            list+= (count+1) + " " + getLocation().items[count].name + ", " 
         }
         // Add "and" before the last item
-        list += "and " + getLocation().items[getLocation().items.length - 1].name
-    } else {
+        list += "and " + getLocation().items.length + " " + getLocation().items[getLocation().items.length - 1].name
+
+    } else if (getLocation().items.length == 1) {
        // Only one item
        list = getLocation().items[0].name
+
+    } else {
+       displayLore("There are no items around.")
+
     }
     return list
 
 }
 
-// Picking up items (currently empty)
-function pickUp(item) {
-    if (getLocation().items.length != 0) {
-        displayLore(listItem())
-//MAKE SCROLL BOX FOR FUTURE ITEM STUFF
-    } else {
-        displayLore("There are no items around.")
-    }
+// Picking up items
+function pickUp() {
+    displayLore(listItem())
+    if (isNumeric(input.value)) {
+        let index = parseInt(input.value) - 1
+        let tempItem = getLocation().items[index]
+        let itemType = tempItem.type
+        let itemPickedUp = false
+
+        for (let i = 0;i < player.inventory.length; i++) {
+            if (player.inventory[i].type == itemType && player.inventory[i].type != "Consumable") {
+                let [removedItem] = getLocation.items.splice(index, 1)
+
+                getLocation().items.push(player.inventory[i])
+
+                player.inventory.push(removedItem)
+                player.inventory[i].remove = true
+                itemPickedUp = true
+            } else {
+//WORK ON THIS PAAAAAARRRRRRTTTTTT
+            }
+
+        }
+
+        player.inventory = player.inventory.filter(item => !item.remove)
+    } 
+
 }
 
 
