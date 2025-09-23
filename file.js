@@ -73,8 +73,9 @@ hall('Item Shop', map, 6, 3)
 hall("Introduction Room", map, 1, 5)
 
 // Items in the Introduction Room
-map[1][5].items.push({type: "Weapon", name: "Stone Sword", atk: 1, remove: false})
-map[1][5].items.push({type: "Aurmor", name: "Iron Aurmor", hp: 5, remove: false})
+map[1][5].items.push({type: "Weapon", name: "Stone Sword", atk: 1})
+map[1][5].items.push({type: "Aurmor", name: "Iron Aurmor", hp: 5})
+map[2][5].items.push({type: "Aurmor", name: "Leather Aurmor", hp: 3})
 
 // Enemy in the Introduction Room
 map[1][5].enemies.push({name: "Goblin", atk: 1, hp: 5})
@@ -110,16 +111,17 @@ input.addEventListener("keypress", function(e) {
 
             // Pick up items
             if (input.value == "j") {
-                pickUp(getLocation().items)
+                displayLore(listItem())
                 mode = "pickUp"
             }
-        } else if (mode == "pickUp") {
-            console.log(player.inventory)
-            console.log(getLocation().items)
-            pickUp()
-            console.log(player.inventory)
-            console.log(getLocation().items)
 
+            if (input.value == "k") {
+                displayLore(listInventory())
+            }
+            
+        } else if (mode == "pickUp") {
+            pickUp()
+            mode = "normal"
         }
 
         // Clear the input box after each command
@@ -137,7 +139,7 @@ function listItem() {
     if (getLocation().items.length == 0) {
         return "There are no items around."
     }
-    let list = "The following items are on the ground "
+    let list = "The following items are on the ground: "
     if (getLocation().items.length > 1) {
         // Multiple items -> list them separated by commas
         for (let count = 0;count < getLocation().items.length - 1; count++) {
@@ -148,44 +150,77 @@ function listItem() {
 
     } else if (getLocation().items.length == 1) {
        // Only one item
-       list = getLocation().items[0].name
-
-    } else {
-       displayLore("There are no items around.")
+       list += "1 "
+       list += getLocation().items[0].name
 
     }
     return list
 
 }
 
+function listInventory() {
+    if (player.inventory.length == 0) {
+        return "There are no items in your inventory."
+    }
+    let list = "The following items are in your inventory: "
+    if (player.inventory.length > 1) {
+        // Multiple items -> list them separated by commas
+        for (let count = 0;count < player.inventory.length - 1; count++) {
+            list+= " " + player.inventory[count].name + ", " 
+        }
+        // Add "and" before the last item
+        list += "and " + " " + player.inventory[player.inventory.length - 1].name
+
+    } else if (player.inventory.length == 1) {
+       // Only one item
+       list += player.inventoryitems[0].name
+
+    } 
+    return list
+
+}
+
 // Picking up items
 function pickUp() {
-    displayLore(listItem())
-    if (isNumeric(input.value)) {
+    if (isNumeric(input.value) && !(input.value > getLocation().items.length)) {
         let index = parseInt(input.value) - 1
         let tempItem = getLocation().items[index]
         let itemType = tempItem.type
-        let itemPickedUp = false
+        let counter = 0
 
+        let itemName = ""
         for (let i = 0;i < player.inventory.length; i++) {
             if (player.inventory[i].type == itemType && player.inventory[i].type != "Consumable") {
-                let [removedItem] = getLocation.items.splice(index, 1)
+                itemName = getLocation().items[index].name
 
-                getLocation().items.push(player.inventory[i])
+                let temp1 = getLocation().items[index]
+                getLocation().items[index] = player.inventory[i]
+                player.inventory[i] = temp1
+                
+                break
 
-                player.inventory.push(removedItem)
-                player.inventory[i].remove = true
-                itemPickedUp = true
             } else {
-//WORK ON THIS PAAAAAARRRRRRTTTTTT
+                counter++
             }
 
         }
 
-        player.inventory = player.inventory.filter(item => !item.remove)
-    } 
+        if (counter == player.inventory.length) {  
+            itemName = getLocation().items[index].name
 
-}
+            player.inventory.push(getLocation().items[index])
+            getLocation().items.splice(index, 1)
+
+        }
+        if (itemName != "") {
+            displayLore("You have picked up: " + itemName)
+        }
+
+    }
+
+} 
+
+
 
 
 
