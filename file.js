@@ -72,10 +72,29 @@ hall('Cave', map, 8, 4)
 hall('Item Shop', map, 6, 3)
 hall("Introduction Room", map, 1, 5)
 
-// Items in the Introduction Room
-map[1][5].items.push({type: "Weapon", name: "Stone Sword", atk: 1})
-map[1][5].items.push({type: "Aurmor", name: "Iron Aurmor", hp: 5})
-map[2][5].items.push({type: "Aurmor", name: "Leather Aurmor", hp: 3})
+// Weapons (10 total)
+map[0][1].items.push({ type: "Weapon", name: "Iron Sword", atk: 3 })
+map[1][0].items.push({ type: "Weapon", name: "Steel Dagger", atk: 2 })
+map[1][5].items.push({ type: "Weapon", name: "Stone Sword", atk: 1 })  // intro room
+map[2][3].items.push({ type: "Weapon", name: "Fire Staff", atk: 5 })
+map[3][6].items.push({ type: "Weapon", name: "Shadow Katana", atk: 6 })
+map[4][2].items.push({ type: "Weapon", name: "Bone Club", atk: 3 })
+map[5][5].items.push({ type: "Weapon", name: "War Hammer", atk: 7 })
+map[6][8].items.push({ type: "Weapon", name: "Holy Lance", atk: 4 })
+map[8][0].items.push({ type: "Weapon", name: "Thunder Sword", atk: 6 })
+map[9][4].items.push({ type: "Weapon", name: "Venom Whip", atk: 5 })
+
+// Armors (10 total)
+map[1][5].items.push({ type: "Aurmor", name: "Iron Aurmor", hp: 5 })  // intro room
+map[2][5].items.push({ type: "Aurmor", name: "Leather Aurmor", hp: 3 })
+map[3][6].items.push({ type: "Aurmor", name: "Steel Aurmor", hp: 7 })
+map[4][6].items.push({ type: "Aurmor", name: "Golden Aurmor", hp: 8 })
+map[5][7].items.push({ type: "Aurmor", name: "Dragon Scale Aurmor", hp: 10 })
+map[6][3].items.push({ type: "Aurmor", name: "Dark Aurmor", hp: 9 })
+map[8][1].items.push({ type: "Aurmor", name: "Holy Aurmor", hp: 7 })
+map[8][4].items.push({ type: "Aurmor", name: "Frost Aurmor", hp: 8 })
+map[9][1].items.push({ type: "Aurmor", name: "Ancient Aurmor", hp: 9 })
+map[9][9].items.push({ type: "Aurmor", name: "Phoenix Feather Aurmor", hp: 7 })
 
 // Enemy in the Introduction Room
 map[1][5].enemies.push({name: "Goblin", atk: 1, hp: 5})
@@ -111,6 +130,10 @@ input.addEventListener("keypress", function(e) {
 
             // Pick up items
             if (input.value == "j") {
+                if (getLocation().items.length != 0) {
+                    displayLore("What would you like to pick up? ")
+                }
+
                 displayLore(listItem())
                 mode = "pickUp"
             }
@@ -182,6 +205,7 @@ function listInventory() {
 
 // Picking up items
 function pickUp() {
+    displayLore(listItem())
     if (isNumeric(input.value) && !(input.value > getLocation().items.length)) {
         let index = parseInt(input.value) - 1
         let tempItem = getLocation().items[index]
@@ -386,3 +410,6 @@ function displayMap(displayStr) {
     MAPElement.innerHTML = displayStr
     MAP.appendChild(MAPElement)
 }
+
+
+
