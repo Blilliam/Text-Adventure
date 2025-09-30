@@ -1,6 +1,7 @@
 // Select the HTML element where lore text will be displayed
 const text = document.querySelector("#textContainer")
 const MAP = document.querySelector("#mapContainer")
+
 // Player object with stats and position
 const player = {
     inventory: [],
@@ -105,57 +106,95 @@ const input = document.querySelector("#text-controls")
 let mode = "normal"
 
 // Listen for keypress events inside the input box
-input.addEventListener("keypress", function(e) {
-    if (e.key == "Enter") {  // Only check when Enter is pressed
-        // Movement commands
-        if (mode == "normal") {
-            if (input.value == "w") {
-                move(0, -1) // up
-            }
-            if (input.value == "a") {
-                move(-1, 0) // left
-            }
-            if (input.value == "s") {
-                move(0, 1) // down
-            }
-            if (input.value == "d") {
-                move(1, 0) // right
-            }
+// input.addEventListener("keydown", function(e) {
+//     if (e.key == "Enter") {  // Only check when Enter is pressed
+//         // Movement commands
+//         if (mode == "normal") {
+//             if (input.value == "w") {
+//                 move(0, -1) // up
+//             }
+//             if (input.value == "a") {
+//                 move(-1, 0) // left
+//             }
+//             if (input.value == "s") {
+//                 move(0, 1) // down
+//             }
+//             if (input.value == "d") {
+//                 move(1, 0) // right
+//             }
 
-            // Lore + items in current location
-            if (input.value == "l") {
+//             // Lore + items in current location
+//             if (input.value == "l") {
+//                 displayLore(getLocation().description)
+//                 displayLore(listItem())
+//             }
+
+//             // Pick up items
+//             if (input.value == "j") {
+//                 if (getLocation().items.length != 0) {
+//                     displayLore("What would you like to pick up? ")
+//                 }
+
+//                 displayLore(listItem())
+//                 mode = "pickUp"
+//             }
+
+//             if (input.value == "k") {
+//                 displayLore(listInventory())
+//             }
+            
+//         } else if (mode == "pickUp") {
+//             pickUp()
+//             mode = "normal"
+//         }
+
+//         // Clear the input box after each command
+//         input.value = ""
+//     }
+// })
+
+document.addEventListener('keydown', function(event) {
+    const key = event.key.toUpperCase(); // Get the key and convert to uppercase for case-insensitivity
+    if (mode == "normal") {
+        switch (key) {
+            case 'W':
+                move(0, -1)
+                break
+            case 'A':
+                move(-1, 0)
+                break
+            case 'S':
+                move(0, 1)
+                break
+            case 'D':
+                move(1, 0)
+                break
+            case 'L':
                 displayLore(getLocation().description)
                 displayLore(listItem())
-            }
-
-            // Pick up items
-            if (input.value == "j") {
+                break;
+            case 'K':
+                displayLore(listInventory())
+                break;
+            case 'J':
                 if (getLocation().items.length != 0) {
                     displayLore("What would you like to pick up? ")
                 }
 
                 displayLore(listItem())
                 mode = "pickUp"
-            }
 
-            if (input.value == "k") {
-                displayLore(listInventory())
-            }
-            
-        } else if (mode == "pickUp") {
+                break
+            default:
+                break
+
+        }
+    } else if (mode == "pickUp") {
             pickUp()
             mode = "normal"
         }
+});
 
-        // Clear the input box after each command
-        input.value = ""
-    }
-})
-
-// function itemType(item) {
-//     type = item.type
-//     return type
-// }
 
 // Function to list all items in the current room
 function listItem() {
@@ -397,11 +436,15 @@ function xycheck(dx, dy) {
 }
 
 // Add lore text to the text container in the DOM
-function displayLore(displayStr) {
-    let textElement = document.createElement("div")
-    textElement.id = "lore"
-    textElement.innerHTML = displayStr
-    text.appendChild(textElement)
+function displayLore(message) {
+    const p = document.createElement("p")
+    p.textContent = message
+    
+    // Use prepend() to add the new message to the top of the container
+    text.prepend(p)
+    
+    // Set the scroll position back to the top of the container
+    text.scrollTop = 0 
 }
 
 function displayMap(displayStr) {
