@@ -8,6 +8,7 @@ const player = {
     x: 5,   // player starting X position    
     y: 0,   // player starting Y position
     hp: 10, // player health
+    maxHp: 10,
     atk: 1  // player attack power
 }
 
@@ -154,8 +155,9 @@ let mode = "normal"
 // })
 
 document.addEventListener('keydown', function(event) {
-    const key = event.key.toUpperCase(); // Get the key and convert to uppercase for case-insensitivity
     if (mode == "normal") {
+        const key = event.key.toUpperCase(); // Get the key and convert to uppercase for case-insensitivity
+        getPlayerStats()
         switch (key) {
             case 'W':
                 move(0, -1)
@@ -175,25 +177,67 @@ document.addEventListener('keydown', function(event) {
                 break;
             case 'K':
                 displayLore(listInventory())
-                break;
+                break
             case 'J':
                 if (getLocation().items.length != 0) {
                     displayLore("What would you like to pick up? ")
+                    displayLore(listItem())
+                    mode = "pickUp"
                 }
 
-                displayLore(listItem())
-                mode = "pickUp"
-
                 break
+
             default:
                 break
 
         }
     } else if (mode == "pickUp") {
-            pickUp()
+            pickUp(event.key)
             mode = "normal"
+    } else if (mode == "battle") {
+        battle(event.key)
+    }
+})
+
+function battle(key) {
+    switch (key) {
+            case 'J':
+
+                break
+
+            case 'L':
+
+                break
+
+            case 'K':
+                displayLore(listInventory())
+                break
+
+    
+
+
+}
+
+function getPlayerStats() {
+    let stats = {atk: player.atk, maxHp: player.maxHp}
+    for (let i = 0;i < player.inventory.length; i++) {
+        if (player.inventory[i].type == "Weapon") {
+            stats.atk += player.inventory[i].atk
+        } else if (player.inventory[i].type == "Aurmor") {
+            stats.maxHp = player.inventory[i].maxHp
         }
-});
+    }
+    return stats
+}
+
+function attack() {
+    getLocation().enemies.hp -= player.atk
+    
+}
+
+// function consumeItem(key) {
+
+// }
 
 
 // Function to list all items in the current room
@@ -235,7 +279,7 @@ function listInventory() {
 
     } else if (player.inventory.length == 1) {
        // Only one item
-       list += player.inventoryitems[0].name
+       list += player.inventory[0].name
 
     } 
     return list
@@ -243,10 +287,10 @@ function listInventory() {
 }
 
 // Picking up items
-function pickUp() {
+function pickUp(key) {
     displayLore(listItem())
-    if (isNumeric(input.value) && !(input.value > getLocation().items.length)) {
-        let index = parseInt(input.value) - 1
+    if (isNumeric(key) && !(key > getLocation().items.length)) {
+        let index = parseInt(key) - 1
         let tempItem = getLocation().items[index]
         let itemType = tempItem.type
         let counter = 0
@@ -311,8 +355,15 @@ function move(dx, dy) {
         else {
             moveDisplay("You are in a " + getLocation().name)
         }
+        
+        if (getLocation().enemies.length >=1) {
+            mode = "battle"
+            displayLore("You are now in battle mode.")
+            displayLore("Controlls: J - attack <brk>L - run")
+        }
+
     } else {
-        // Invalid move
+        // Invalid 
         map[player.y + dy][player.x + dx].found = true
         moveDisplay("You cannot move in that direction")
     }
@@ -438,13 +489,13 @@ function xycheck(dx, dy) {
 // Add lore text to the text container in the DOM
 function displayLore(message) {
     const p = document.createElement("p")
-    p.textContent = message
+    p.innerHTML = message
     
     // Use prepend() to add the new message to the top of the container
-    text.prepend(p)
+    text.append(p)
     
     // Set the scroll position back to the top of the container
-    text.scrollTop = 0 
+    text.scrollTop = text.scrollHeight 
 }
 
 function displayMap(displayStr) {

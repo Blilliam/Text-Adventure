@@ -56,23 +56,19 @@ div {
 }
 
 #textContainer {
-    /* Set a specific height for the text area */
     height: 250px; 
     
-    /* Add a scrollbar if the content overflows vertically */
     overflow-y: auto; 
     
-    /* Add padding for better spacing around the text */
     padding: 10px;
-    
-    /* Make the text color stand out */
+
     color: #eee;
     
-    /* Optional: Add a border for better visual separation */
     border: 1px solid #555;
     
-    /* Optional: Some margin to space it out */
     margin-bottom: 10px;
+
+    white-space: pre-wrap;
 }
 
 /* To improve readability, you might also want to style the text inside */
