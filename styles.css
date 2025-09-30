@@ -37,3 +37,46 @@ div {
   white-space: pre;      /* preserves spaces and line breaks */
   /* or use: pre-wrap to wrap long lines */
 }
+
+.progress-container {
+    width: 100%;
+    background-color: #000000;
+    border-radius: 0px;
+    overflow: hidden;
+    margin-top: 0px; /* Add some spacing */
+}
+
+.progress-bar {
+    height: 20px;
+    background-color: #4CAF50; /* Green color for the bar */
+    text-align: center;
+    line-height: 20px;
+    color: white;
+    border-radius: 5px;
+}
+
+#textContainer {
+    /* Set a specific height for the text area */
+    height: 250px; 
+    
+    /* Add a scrollbar if the content overflows vertically */
+    overflow-y: auto; 
+    
+    /* Add padding for better spacing around the text */
+    padding: 10px;
+    
+    /* Make the text color stand out */
+    color: #eee;
+    
+    /* Optional: Add a border for better visual separation */
+    border: 1px solid #555;
+    
+    /* Optional: Some margin to space it out */
+    margin-bottom: 10px;
+}
+
+/* To improve readability, you might also want to style the text inside */
+#textContainer p {
+    margin: 0; /* Remove default paragraph margins */
+    padding: 2px 0; /* Add a little vertical space between paragraphs */
+}
