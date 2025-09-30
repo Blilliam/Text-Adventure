@@ -212,10 +212,7 @@ function battle(key) {
             case 'K':
                 displayLore(listInventory())
                 break
-
-    
-
-
+    }
 }
 
 function getPlayerStats() {
