@@ -192,16 +192,32 @@ document.addEventListener('keydown', function(event) {
 
         }
     } else if (mode == "pickUp") {
-            pickUp(event.key)
-            mode = "normal"
+        pickUp(event.key)
+        mode = "normal"
     } else if (mode == "battle") {
-        battle(event.key)
+        if (battle(event.key)) {
+            displayLore("You have deafeated the " + getLocation().enemies[0].name)
+            getLocation().enemies.splice(0, 0)
+        }
     }
 })
 
 function battle(key) {
-    switch (key) {
-            case 'J':
+
+    if (getLocation().enemies[0].hp - getPlayerStats().atk <= 0) {
+        return true
+    } else {
+        switch (key.toUpperCase()) {
+            case 'J':  
+                displayLore("You have dealt " + getPlayerStats().atk + " damage to the " + getLocation().enemies[0].name)
+                getLocation().enemies[0].hp -= getPlayerStats().atk
+
+                if (getLocation().enemies[0].hp <= 0) {
+                    displayLore("The " + getLocation().enemies[0].name + "'s health has been deducted from " + (getLocation().enemies[0].hp + getPlayerStats().atk) + " to 0")
+                } else {
+                    displayLore("The " + getLocation().enemies[0].name + "'s health has been deducted from " + (getLocation().enemies[0].hp + getPlayerStats().atk) + " to " + getLocation().enemies[0].hp)
+                }
+                
 
                 break
 
@@ -212,6 +228,7 @@ function battle(key) {
             case 'K':
                 displayLore(listInventory())
                 break
+        }
     }
 }
 
