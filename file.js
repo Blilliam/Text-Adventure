@@ -7,9 +7,9 @@ const player = {
     inventory: [],
     x: 5,   // player starting X position    
     y: 0,   // player starting Y position
-    hp: 10, // player health
-    maxHp: 10,
-    atk: 1  // player attack power
+    hp: 100, // player health
+    maxHp: 100,
+    atk: 10  // player attack power
 }
 
 function isNumeric(str) {
@@ -75,31 +75,32 @@ hall('Item Shop', map, 6, 3)
 hall("Introduction Room", map, 1, 5)
 
 // Weapons (10 total)
-map[0][1].items.push({ type: "Weapon", name: "Iron Sword", atk: 3 })
-map[1][0].items.push({ type: "Weapon", name: "Steel Dagger", atk: 2 })
-map[1][5].items.push({ type: "Weapon", name: "Stone Sword", atk: 1 })  // intro room
-map[2][3].items.push({ type: "Weapon", name: "Fire Staff", atk: 5 })
-map[3][6].items.push({ type: "Weapon", name: "Shadow Katana", atk: 6 })
-map[4][2].items.push({ type: "Weapon", name: "Bone Club", atk: 3 })
-map[5][5].items.push({ type: "Weapon", name: "War Hammer", atk: 7 })
-map[6][8].items.push({ type: "Weapon", name: "Holy Lance", atk: 4 })
-map[8][0].items.push({ type: "Weapon", name: "Thunder Sword", atk: 6 })
-map[9][4].items.push({ type: "Weapon", name: "Venom Whip", atk: 5 })
+map[0][1].items.push({ type: "Weapon", name: "Iron Sword", atk: 30 })
+map[1][0].items.push({ type: "Weapon", name: "Steel Dagger", atk: 20 })
+map[1][5].items.push({ type: "Weapon", name: "Stone Sword", atk: 10 })  // intro room
+map[2][3].items.push({ type: "Weapon", name: "Fire Staff", atk: 50 })
+map[3][6].items.push({ type: "Weapon", name: "Shadow Katana", atk: 60 })
+map[4][2].items.push({ type: "Weapon", name: "Bone Club", atk: 30 })
+map[5][5].items.push({ type: "Weapon", name: "War Hammer", atk: 70 })
+map[6][8].items.push({ type: "Weapon", name: "Holy Lance", atk: 40 })
+map[8][0].items.push({ type: "Weapon", name: "Thunder Sword", atk: 60 })
+map[9][4].items.push({ type: "Weapon", name: "Venom Whip", atk: 50 })
 
 // Armors (10 total)
-map[1][5].items.push({ type: "Aurmor", name: "Iron Aurmor", hp: 5 })  // intro room
-map[2][5].items.push({ type: "Aurmor", name: "Leather Aurmor", hp: 3 })
-map[3][6].items.push({ type: "Aurmor", name: "Steel Aurmor", hp: 7 })
-map[4][6].items.push({ type: "Aurmor", name: "Golden Aurmor", hp: 8 })
-map[5][7].items.push({ type: "Aurmor", name: "Dragon Scale Aurmor", hp: 10 })
-map[6][3].items.push({ type: "Aurmor", name: "Dark Aurmor", hp: 9 })
-map[8][1].items.push({ type: "Aurmor", name: "Holy Aurmor", hp: 7 })
-map[8][4].items.push({ type: "Aurmor", name: "Frost Aurmor", hp: 8 })
-map[9][1].items.push({ type: "Aurmor", name: "Ancient Aurmor", hp: 9 })
-map[9][9].items.push({ type: "Aurmor", name: "Phoenix Feather Aurmor", hp: 7 })
+map[1][5].items.push({ type: "Aurmor", name: "Iron Aurmor", def: 5 })  // intro room
+map[2][5].items.push({ type: "Aurmor", name: "Leather Aurmor", def: 3 })
+map[3][6].items.push({ type: "Aurmor", name: "Steel Aurmor", def: 7 })
+map[4][6].items.push({ type: "Aurmor", name: "Golden Aurmor", def: 8 })
+map[5][7].items.push({ type: "Aurmor", name: "Dragon Scale Aurmor", def: 10 })
+map[6][3].items.push({ type: "Aurmor", name: "Dark Aurmor", def: 9 })
+map[8][1].items.push({ type: "Aurmor", name: "Holy Aurmor", def: 7 })
+map[8][4].items.push({ type: "Aurmor", name: "Frost Aurmor", def: 8 })
+map[9][1].items.push({ type: "Aurmor", name: "Ancient Aurmor", def: 9 })
+map[9][9].items.push({ type: "Aurmor", name: "Phoenix Feather Aurmor", def: 7 })
 
 // Enemy in the Introduction Room
-map[1][5].enemies.push({name: "Goblin", atk: 1, hp: 5})
+map[1][5].enemies.push({name: "Goblin", atk: 10, hp: 50})
+map[1][3].enemies.push({name: "Goblin", atk: 25, hp: 500})
 
 // Grab the input box for player commands
 const input = document.querySelector("#text-controls")
@@ -197,8 +198,10 @@ document.addEventListener('keydown', function(event) {
     } else if (mode == "battle") {
         if (battle(event.key)) {
             displayLore("You have deafeated the " + getLocation().enemies[0].name)
-            getLocation().enemies.splice(0, 0)
+            getLocation().enemies.splice(0, 1)
+            mode = "normal"
         }
+    } else if (mode == "dead") {
     }
 })
 
@@ -217,7 +220,8 @@ function battle(key) {
                 } else {
                     displayLore("The " + getLocation().enemies[0].name + "'s health has been deducted from " + (getLocation().enemies[0].hp + getPlayerStats().atk) + " to " + getLocation().enemies[0].hp)
                 }
-                
+
+                playerGetsHit()
 
                 break
 
@@ -230,6 +234,32 @@ function battle(key) {
                 break
         }
     }
+}
+
+function playerGetsHit() {   
+    
+    if (getType("Aurmor")) {
+        let resPercent = getType("Aurmor").def * 0.04
+        console.log(resPercent)
+        player.hp -= parseInt((getLocation().enemies[0].atk) * (1 - resPercent))
+        displayLore("Your health has been deducted from " + (player.hp + getLocation().enemies[0].atk) + " to " + Math.max(player.hp, 0))
+    } else {
+        player.hp -= getLocation().enemies[0].atk
+        displayLore("Your health has been deducted from " + (player.hp + getLocation().enemies[0].atk) + " to " + Math.max(player.hp, 0))
+    }
+    if (player.hp <= 0) {
+        displayLore("You have died")
+        mode = "dead"
+    }
+}
+
+function getType(type) {
+    for ( let item of player.inventory) {
+        if (item.type == type) {
+            return item
+        }
+    }
+    return false
 }
 
 function getPlayerStats() {
@@ -373,7 +403,7 @@ function move(dx, dy) {
         if (getLocation().enemies.length >=1) {
             mode = "battle"
             displayLore("You are now in battle mode.")
-            displayLore("Controlls: J - attack <brk>L - run")
+            displayLore("Controlls: <br>J - attack <br>L - run<br>K - check inventory")
         }
 
     } else {
