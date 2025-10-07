@@ -98,9 +98,39 @@ map[8][4].items.push({ type: "Aurmor", name: "Frost Aurmor", def: 8 })
 map[9][1].items.push({ type: "Aurmor", name: "Ancient Aurmor", def: 9 })
 map[9][9].items.push({ type: "Aurmor", name: "Phoenix Feather Aurmor", def: 7 })
 
-// Enemy in the Introduction Room
-map[1][5].enemies.push({name: "Goblin", atk: 10, hp: 50})
-map[1][3].enemies.push({name: "Goblin", atk: 25, hp: 500})
+// Introduction Area
+map[1][5].enemies.push({ name: "Goblin", atk: 10, hp: 50 });
+map[1][4].enemies.push({ name: "Slime", atk: 5, hp: 30 });
+map[1][6].enemies.push({ name: "Bandit", atk: 12, hp: 70 });
+
+// Field (mid-level monsters)
+map[5][8].enemies.push({ name: "Wild Boar", atk: 15, hp: 100 });
+map[4][8].enemies.push({ name: "Venom Snake", atk: 20, hp: 120 });
+map[6][8].enemies.push({ name: "Treant", atk: 25, hp: 160 });
+
+// Cave (stronger monsters)
+map[8][4].enemies.push({ name: "Cave Spider", atk: 18, hp: 150 });
+map[8][3].enemies.push({ name: "Stone Golem", atk: 30, hp: 300 });
+map[9][4].enemies.push({ name: "Earth Dragon", atk: 45, hp: 600 });
+
+// Old House (ghost-type enemies)
+map[4][2].enemies.push({ name: "Haunted Spirit", atk: 22, hp: 140 });
+map[4][3].enemies.push({ name: "Cursed Doll", atk: 28, hp: 180 });
+map[3][2].enemies.push({ name: "Phantom", atk: 35, hp: 220 });
+
+// Lodge (rare beasts)
+map[8][1].enemies.push({ name: "Frost Wolf", atk: 26, hp: 200 });
+map[8][2].enemies.push({ name: "Ice Golem", atk: 34, hp: 320 });
+map[7][1].enemies.push({ name: "Snow Spirit", atk: 20, hp: 180 });
+
+// Forge (mechanical enemies)
+map[2][3].enemies.push({ name: "Iron Automaton", atk: 32, hp: 260 });
+map[2][4].enemies.push({ name: "Molten Construct", atk: 38, hp: 310 });
+
+// Weapon Shop area (special duels)
+map[5][5].enemies.push({ name: "Sword Master", atk: 40, hp: 350 });
+map[5][4].enemies.push({ name: "Apprentice Warrior", atk: 20, hp: 120 });
+map[6][5].enemies.push({ name: "Arena Champion", atk: 50, hp: 500 });
 
 // Grab the input box for player commands
 const input = document.querySelector("#text-controls")
@@ -238,11 +268,13 @@ function battle(key) {
 
 function playerGetsHit() {   
     
-    if (getType("Aurmor")) {
-        let resPercent = getType("Aurmor").def * 0.04
+    if (getTypeTF("Aurmor")) {
+        let resPercent = getType("Aurmor").def * 0.05
+        let scaledDamage = (parseInt)((getLocation().enemies[0].atk) * (1 - resPercent))
         console.log(resPercent)
-        player.hp -= parseInt((getLocation().enemies[0].atk) * (1 - resPercent))
-        displayLore("Your health has been deducted from " + (player.hp + getLocation().enemies[0].atk) + " to " + Math.max(player.hp, 0))
+        player.hp -= scaledDamage
+        console.log(player.hp)
+        displayLore("Your health has been deducted from " + (player.hp +scaledDamage) + " to " + Math.max(player.hp, 0))
     } else {
         player.hp -= getLocation().enemies[0].atk
         displayLore("Your health has been deducted from " + (player.hp + getLocation().enemies[0].atk) + " to " + Math.max(player.hp, 0))
@@ -257,6 +289,15 @@ function getType(type) {
     for ( let item of player.inventory) {
         if (item.type == type) {
             return item
+        }
+    }
+    return false
+}
+
+function getTypeTF(type) {
+    for (let item of player.inventory) {
+        if (item.type == type) {
+            return true
         }
     }
     return false
